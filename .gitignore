@@ -1,0 +1,13 @@
+bin/
+obj/
+
+.vscode/
+*.user
+*.suo
+
+*.nupkg
+
+*.log
+*.tmp
+
+appsettings.Development.json
