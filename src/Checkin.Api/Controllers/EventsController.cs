@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Checkin.Api.Data;
 using Checkin.Api.Models;
+using Checkin.Api.Services;
 
 namespace Checkin.Api.Controllers
 {
@@ -9,55 +9,48 @@ namespace Checkin.Api.Controllers
     [Route("/api/v1/[controller]")]
     public class EventsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly EventsService _service;
 
-        public EventsController(AppDbContext context)
+        public EventsController(EventsService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> getAll()
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var eventList = await _context.Events.ToListAsync();
-            return Ok(eventList);
+            var events = await _service.GetPagedEvents(pageNumber, pageSize);
+            var total = await _service.GetTotalCount();
+            return Ok(new { Data = events, PageNumber = pageNumber, PageSize = pageSize, TotalCount = total });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var evt = await _context.Events.FindAsync(id);
-            if (evt == null) return NotFound();
-            return Ok(evt);
+            var evt = await _service.GetEventById(id);
+            return evt == null ? NotFound() : Ok(evt);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Event evt)
         {
-            _context.Events.Add(evt);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = evt.Id }, evt);
+            var created = await _service.CreateEvent(evt);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Event evt)
         {
             if (id != evt.Id) return BadRequest();
-
-            _context.Entry(evt).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            var updated = await _service.UpdateEvent(evt);
+            return updated ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var evt = await _context.Events.FindAsync(id);
-            if (evt == null) return NotFound();
-
-            _context.Events.Remove(evt);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            var deleted = await _service.DeleteEvent(id);
+            return deleted ? NoContent() : NotFound();
         }
 
     }
