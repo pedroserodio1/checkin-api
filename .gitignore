@@ -11,3 +11,5 @@ obj/
 *.tmp
 
 appsettings.Development.json
+
+.env

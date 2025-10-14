@@ -12,5 +12,6 @@ namespace Checkin.Api.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
         public DbSet<Event> Events { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
     }
 }

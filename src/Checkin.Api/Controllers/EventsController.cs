@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Checkin.Api.Models;
 using Checkin.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Checkin.Api.Controllers
 {
@@ -31,8 +34,15 @@ namespace Checkin.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(Event evt)
         {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            Console.WriteLine("User role: " + role);
+            if (role != "Organizador" && role != "Admin")
+            {
+                return Forbid();
+            }
             var created = await _service.CreateEvent(evt);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
