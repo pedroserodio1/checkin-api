@@ -19,9 +19,8 @@ namespace Checkin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var events = await _service.GetPagedEvents(pageNumber, pageSize);
-            var total = await _service.GetTotalCount();
-            return Ok(new { Data = events, PageNumber = pageNumber, PageSize = pageSize, TotalCount = total });
+            var result = await _service.GetPagedEvents(pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

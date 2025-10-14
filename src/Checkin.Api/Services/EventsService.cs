@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Checkin.Api.Data;
 using Checkin.Api.Models;
+using Checkin.Api.Common;
 
 namespace Checkin.Api.Services
 {
@@ -26,13 +27,22 @@ namespace Checkin.Api.Services
             return await _context.Events.FindAsync(id);
         }
 
-        public async Task<List<Event>> GetPagedEvents(int pageNumber, int pageSize)
+        public async Task<PageResult<Event>> GetPagedEvents(int pageNumber, int pageSize)
         {
-            return await _context.Events
-                                 .OrderBy(e => e.Date)
-                                 .Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize)
-                                 .ToListAsync();
+            var total = await _context.Events.CountAsync();
+            var items = await _context.Events
+                                      .OrderBy(e => e.Date)
+                                      .Skip((pageNumber - 1) * pageSize)
+                                      .Take(pageSize)
+                                      .ToListAsync();
+
+            return new PageResult<Event>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalItems = total
+            };
         }
 
         public async Task<bool> UpdateEvent(Event evt)
