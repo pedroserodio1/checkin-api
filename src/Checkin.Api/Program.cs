@@ -8,6 +8,8 @@ using Checkin.Api.Common;
 using Checkin.Api.Utils;
 using Checkin.Api.Auth;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +53,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //inicia um passwordhasher com as configurações de segurança
 builder.Services.AddSingleton<PasswordHasher>();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(
+                JsonNamingPolicy.CamelCase, true // case-insensitive
+            )
+        ));
 
 var app = builder.Build();
 

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Checkin.Api.Models;
 using Checkin.Api.Services;
 using Checkin.Api.DTO;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Checkin.Api.Controllers
 {
@@ -18,15 +20,27 @@ namespace Checkin.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role != "Admin")
+            {
+                return Forbid();
+            }
             var result = await _service.GetPagedUsers(pageNumber, pageSize);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role != "Admin")
+            {
+                return Forbid();
+            }
             var user = await _service.GetUserById(id);
             return user == null ? NotFound() : Ok(user);
         }
@@ -47,8 +61,14 @@ namespace Checkin.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role != "Admin")
+            {
+                return Forbid();
+            }
             var deleted = await _service.DeleteUser(id);
             return deleted ? NoContent() : NotFound();
         }

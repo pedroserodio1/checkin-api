@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Checkin.Api.Enums;
 
 namespace Checkin.Api.Models
 {
@@ -10,8 +11,11 @@ namespace Checkin.Api.Models
         public string FullName { get; set; } = string.Empty;
         public DateTime RegisteredAt { get; set; }
         public string PasswordHash { get; set; } = string.Empty;
-        public string Role { get; set; } = "User"; // Default role
+        public UserRole Role { get; set; } = UserRole.Participant; // Default role
         public string Salt { get; set; } = string.Empty;
+
+        //relacionamentos
+        public ICollection<Event> Events { get; set; } = new List<Event>();
 
         //entidades nao mapeadas
         [NotMapped]
