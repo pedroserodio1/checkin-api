@@ -14,6 +14,16 @@ namespace Checkin.Api.Data
         public DbSet<Event> Events { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+             .Property(u => u.RegisteredAt)
+             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+
+        }
+
         public override int SaveChanges()
         {
             UpdateTimestamps();

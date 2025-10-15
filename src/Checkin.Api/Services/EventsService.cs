@@ -34,6 +34,27 @@ namespace Checkin.Api.Services
                                       .OrderBy(e => e.Date)
                                       .Skip((pageNumber - 1) * pageSize)
                                       .Take(pageSize)
+                                      .Include(e => e.Organizer) // inclui dados do organizador
+                                      .Select(e => new Event // projeta apenas os campos necessários
+                                      {
+                                          Id = e.Id,
+                                          Name = e.Name,
+                                          Location = e.Location,
+                                          Date = e.Date,
+                                          Time = e.Time,
+                                          Description = e.Description,
+                                          Capacity = e.Capacity,
+                                          CreatedAt = e.CreatedAt,
+                                          UpdatedAt = e.UpdatedAt,
+                                          OrganizerId = e.OrganizerId,
+                                          Organizer = new User
+                                          {
+                                              Id = e.Organizer!.Id,
+                                              Username = e.Organizer.Username,
+                                              FullName = e.Organizer.FullName,
+                                              Email = e.Organizer.Email
+                                          }
+                                      })
                                       .ToListAsync();
 
             return new PageResult<Event>
@@ -64,6 +85,34 @@ namespace Checkin.Api.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<Event>> getEventByUserId(int userId)
+        {
+            return await _context.Events
+                                 .Where(e => e.OrganizerId == userId)
+                                 .Include(e => e.Organizer)
+                                 .Select(e => new Event // projeta apenas os campos necessários
+                                 {
+                                     Id = e.Id,
+                                     Name = e.Name,
+                                     Location = e.Location,
+                                     Date = e.Date,
+                                     Time = e.Time,
+                                     Description = e.Description,
+                                     Capacity = e.Capacity,
+                                     CreatedAt = e.CreatedAt,
+                                     UpdatedAt = e.UpdatedAt,
+                                     OrganizerId = e.OrganizerId,
+                                     Organizer = new User
+                                     {
+                                         Id = e.Organizer!.Id,
+                                         Username = e.Organizer.Username,
+                                         FullName = e.Organizer.FullName,
+                                         Email = e.Organizer.Email
+                                     }
+                                 })
+                                 .ToListAsync();
+        } 
 
         public async Task<int> GetTotalCount()
         {
