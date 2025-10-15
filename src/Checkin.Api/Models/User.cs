@@ -20,6 +20,8 @@ namespace Checkin.Api.Models
         //relacionamentos
         [JsonIgnore]
         public ICollection<Event> Events { get; set; } = new List<Event>();
+        [JsonIgnore]
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
         //entidades nao mapeadas
         [NotMapped]

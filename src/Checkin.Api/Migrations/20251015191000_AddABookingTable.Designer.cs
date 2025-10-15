@@ -3,6 +3,7 @@ using System;
 using Checkin.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Checkin.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015191000_AddABookingTable")]
+    partial class AddABookingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,35 +24,6 @@ namespace Checkin.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Checkin.Api.Models.Booking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("BookingTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("CheckedIn")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Bookings");
-                });
 
             modelBuilder.Entity("Checkin.Api.Models.Event", b =>
                 {
@@ -137,25 +111,6 @@ namespace Checkin.Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Checkin.Api.Models.Booking", b =>
-                {
-                    b.HasOne("Checkin.Api.Models.Event", "Event")
-                        .WithMany("Bookings")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Checkin.Api.Models.User", "User")
-                        .WithMany("Bookings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Checkin.Api.Models.Event", b =>
                 {
                     b.HasOne("Checkin.Api.Models.User", "Organizer")
@@ -167,15 +122,8 @@ namespace Checkin.Api.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("Checkin.Api.Models.Event", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
             modelBuilder.Entity("Checkin.Api.Models.User", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Events");
                 });
 #pragma warning restore 612, 618

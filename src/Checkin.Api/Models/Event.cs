@@ -17,7 +17,8 @@ namespace Checkin.Api.Models
         public int OrganizerId { get; set; }
 
         //relacionamentos
-
+        [JsonIgnore]
+        public ICollection<Booking> Bookings { get; set; } = [];
         public User? Organizer { get; set; } = null;
     }
 }

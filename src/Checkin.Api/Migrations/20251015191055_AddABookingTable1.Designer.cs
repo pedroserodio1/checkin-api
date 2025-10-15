@@ -3,6 +3,7 @@ using System;
 using Checkin.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Checkin.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015191055_AddABookingTable1")]
+    partial class AddABookingTable1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,13 +143,13 @@ namespace Checkin.Api.Migrations
             modelBuilder.Entity("Checkin.Api.Models.Booking", b =>
                 {
                     b.HasOne("Checkin.Api.Models.Event", "Event")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Checkin.Api.Models.User", "User")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -167,15 +170,8 @@ namespace Checkin.Api.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("Checkin.Api.Models.Event", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
             modelBuilder.Entity("Checkin.Api.Models.User", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
